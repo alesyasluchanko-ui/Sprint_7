@@ -1,7 +1,13 @@
 package model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import java.util.List;
 
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Order {
     private String firstName;
     private String lastName;
@@ -13,48 +19,16 @@ public class Order {
     private String comment;
     private List<String> color;
 
-    // Обязательный пустой конструктор для Jackson
-    public Order() {
-    }
 
-    // Конструктор, принимающий список цветов для параметризованного теста
     public Order(List<String> color) {
-        this.firstName = "Naruto";
-        this.lastName = "Uchiha";
-        this.address = "Konoha, 142 apt.";
-        this.metroStation = "4";
-        this.phone = "+7 800 355 35 35";
+        this.firstName = "Alesya";
+        this.lastName = "Sluchanko";
+        this.address = "Minsk, Filimonova, 35";
+        this.metroStation = "Moskovskaya";
+        this.phone = "+375 29 123 45 78";
         this.rentTime = 5;
         this.deliveryDate = "2026-12-12";
-        this.comment = "Saske, come back to Konoha";
+        this.comment = "Pozvonit za 1 chas do dostavki";
         this.color = color;
     }
-
-    // Геттеры и сеттеры
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
-
-    public String getAddress() { return address; }
-    public void setAddress(String address) { this.address = address; }
-
-    public String getMetroStation() { return metroStation; }
-    public void setMetroStation(String metroStation) { this.metroStation = metroStation; }
-
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
-
-    public int getRentTime() { return rentTime; }
-    public void setRentTime(int rentTime) { this.rentTime = rentTime; }
-
-    public String getDeliveryDate() { return deliveryDate; }
-    public void setDeliveryDate(String deliveryDate) { this.deliveryDate = deliveryDate; }
-
-    public String getComment() { return comment; }
-    public void setComment(String comment) { this.comment = comment; }
-
-    public List<String> getColor() { return color; }
-    public void setColor(List<String> color) { this.color = color; }
 }

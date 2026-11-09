@@ -27,14 +27,14 @@ public class CreateOrderTest {
         this.colors = colors;
     }
 
-    // Набор тестовых данных для параметризации цветов
+
     @Parameterized.Parameters(name = "Тест цвета заказа: {0}")
     public static Object[][] getTestData() {
         return new Object[][]{
-                {List.of("BLACK")},                 // Только черный
-                {List.of("GREY")},                  // Только серый
-                {Arrays.asList("BLACK", "GREY")},   // Оба цвета
-                {Collections.emptyList()}           // Цвет не указан
+                {List.of("BLACK")},
+                {List.of("GREY")},
+                {Arrays.asList("BLACK", "GREY")},
+                {Collections.emptyList()}
         };
     }
 

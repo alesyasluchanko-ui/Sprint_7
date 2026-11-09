@@ -10,6 +10,12 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+
+import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
+import static org.apache.http.HttpStatus.SC_NOT_FOUND;
+
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 public class LoginCourierTest {
@@ -33,7 +39,7 @@ public class LoginCourierTest {
         if (courierId != null) {
             courierClient.delete(courierId);
         } else {
-            // Если в тесте ID не сохранился, пробуем залогиниться и удалить на всякий случай
+            // Если в тесте ID не сохранился, пробуем залогиниться и удалить
             try {
                 courierId = courierClient.login(new CourierCredentials(courier.getLogin(), courier.getPassword()))
                         .then().extract().path("id");
@@ -47,13 +53,13 @@ public class LoginCourierTest {
 
     @Test
     @DisplayName("Успешная авторизация курьера")
-    @Description("Проверка, что курьер может авторизоваться при передаче правильных данных, запрос возвращает код 200 и id курьера")
+    @Description("Проверка, что курьер может авторизоваться при передаче правильных данных, запрос возвращает код 200 (OK) и id курьера")
     public void courierCanLogin() {
         CourierCredentials credentials = new CourierCredentials(courier.getLogin(), courier.getPassword());
         Response response = courierClient.login(credentials);
 
         response.then()
-                .statusCode(200)
+                .statusCode(SC_OK)
                 .body("id", notNullValue());
 
         courierId = response.then().extract().path("id");
@@ -61,39 +67,51 @@ public class LoginCourierTest {
 
     @Test
     @DisplayName("Ошибка авторизации с неправильным паролем")
-    @Description("Проверка, что система возвращает ошибку 404, если указать неверный пароль")
+    @Description("Проверка, что система возвращает ошибку 404 (Not Found) и точное сообщение, если указать неверный пароль")
     public void loginWithWrongPasswordReturnsError() {
         CourierCredentials credentials = new CourierCredentials(courier.getLogin(), "wrong_password");
         Response response = courierClient.login(credentials);
 
         response.then()
-                .statusCode(404)
-                .body("message", notNullValue());
+                .statusCode(SC_NOT_FOUND)
+                .body("message", equalTo("Учетная запись не найдена"));
     }
 
     @Test
     @DisplayName("Ошибка авторизации под несуществующим пользователем")
-    @Description("Проверка, что система возвращает ошибку 404 при попытке авторизоваться под несуществующим логином")
+    @Description("Проверка, что система возвращает ошибку 404 (Not Found) и точное сообщение при попытке авторизоваться под несуществующим логином")
     public void loginWithNonExistentCourierReturnsError() {
         CourierCredentials credentials = new CourierCredentials("non_existent_ninja_999", "pass123");
         Response response = courierClient.login(credentials);
 
         response.then()
-                .statusCode(404)
-                .body("message", notNullValue());
+                .statusCode(SC_NOT_FOUND)
+                .body("message", equalTo("Учетная запись не найдена"));
+    }
+
+    @Test
+    @DisplayName("Ошибка авторизации без указания логина")
+    @Description("Проверка, что если не передать обязательное поле login, запрос возвращает ошибку 400 (Bad Request) и точное сообщение")
+    public void loginWithoutLoginReturnsError() {
+        // Передаем пустую строку вместо логина
+        CourierCredentials credentials = new CourierCredentials("", courier.getPassword());
+        Response response = courierClient.login(credentials);
+
+        response.then()
+                .statusCode(SC_BAD_REQUEST)
+                .body("message", equalTo("Недостаточно данных для входа"));
     }
 
     @Test
     @DisplayName("Ошибка авторизации без указания пароля")
-    @Description("Проверка, что если не передать обязательное поле password, запрос возвращает ошибку 400")
+    @Description("Проверка, что если не передать обязательное поле password, запрос возвращает ошибку 400 (Bad Request) и точное сообщение")
     public void loginWithoutPasswordReturnsError() {
 
         CourierCredentials credentials = new CourierCredentials(courier.getLogin(), "");
         Response response = courierClient.login(credentials);
 
         response.then()
-                .statusCode(400)
-                .body("message", notNullValue());
+                .statusCode(SC_BAD_REQUEST)
+                .body("message", equalTo("Недостаточно данных для входа"));
     }
 }
-
